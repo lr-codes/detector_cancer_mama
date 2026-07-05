@@ -1,31 +1,33 @@
 import streamlit as st
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+import joblib
 
 st.set_page_config(page_title="Detector de Cáncer de Mama", layout="centered")
 
 st.title("Sistema de Diagnóstico de Cáncer de Mama")
 st.write("Esta aplicación utiliza un modelo de Machine Learning (Bosque Aleatorio) auditado con una precisión del **95.6%** para predecir si un tumor celular es benigno o maligno.")
 
-# Llamar al modelo una única vez
 @st.cache_resource
-def preparar_inteligencia_artificial():
+def cargar_modelo():
+    return joblib.load('modelo_cancer.joblib')
+
+modelo = cargar_modelo()
+
+# 3. Cargar los datos SOLO para configurar los mínimos y máximos de los botones
+@st.cache_data
+def cargar_datos_interfaz():
     datos = pd.read_csv("Cancer_Data.csv")
-    datos = datos.drop(columns=['id', 'Unnamed: 32', 'perimeter_mean', 'area_mean', 'perimeter_worst', 'area_worst', 'perimeter_se', 'area_se'], errors='ignore')
-    datos['diagnosis'] = datos['diagnosis'].map({'M': 1 , 'B': 0})
-    
-    X = datos.drop(columns=['diagnosis'])
-    y = datos['diagnosis']
-    
-    # Entrenar con tus hiperparámetros ganadores del entrenamiento previo   
-    modelo = RandomForestClassifier(n_estimators=50, max_depth=10, min_samples_leaf=1, random_state=42)
-    modelo.fit(X, y)
-    
-    return modelo, X.columns, datos
+    # Limpiamos las columnas que no usa el modelo
+    columnas_basura = ['id', 'Unnamed: 32', 'perimeter_mean', 'area_mean', 'perimeter_worst', 'area_worst', 'perimeter_se', 'area_se', 'diagnosis']
+    columnas_utiles = [col for col in datos.columns if col not in columnas_basura]
+    return datos, columnas_utiles
 
-modelo, columnas, datos_completos = preparar_inteligencia_artificial()
+datos_completos, columnas = cargar_datos_interfaz()
 
-# 3. Crear la barra lateral con los controles (sliders)
+st.divider()
+
+# 4. Crear la barra lateral con los controles (sliders)
 st.sidebar.header("Datos de la Biopsia del Paciente")
 st.sidebar.write("Desliza los valores para introducir las métricas celulares:")
 
