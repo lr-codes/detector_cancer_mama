@@ -31,16 +31,22 @@ st.divider()
 st.sidebar.header("Datos de la Biopsia del Paciente")
 st.sidebar.write("Desliza los valores para introducir las métricas celulares:")
 
-# Generamos automáticamente un deslizador (slider) por cada variable médica
+# Generamos automáticamente una caja de texto por cada variable médica
 input_usuario = {}
 for col in columnas:
     valor_minimo = float(datos_completos[col].min())
     valor_maximo = float(datos_completos[col].max())
     valor_medio = float(datos_completos[col].mean())
     
-    # Creamos el control deslizante
-    input_usuario[col] = st.sidebar.slider(col, min_value=valor_minimo, max_value=valor_maximo, value=valor_medio)
-
+    # Creamos la entrada numérica con 4 decimales permitidos
+    input_usuario[col] = st.sidebar.number_input(
+        label=col, 
+        min_value=valor_minimo, 
+        max_value=valor_maximo, 
+        value=valor_medio,
+        format="%.4f",  # Obligamos a la interfaz a mostrar 4 decimales
+        step=0.0001     # Permite ajustes milimétricos si usas las flechas
+    )
 # 4. El botón de diagnóstico
 if st.button("Realizar Diagnóstico", type="primary"):
     df_paciente = pd.DataFrame([input_usuario])
