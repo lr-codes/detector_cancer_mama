@@ -17,6 +17,9 @@ Si deseas ejecutar este proyecto en tu propia máquina:
 2. Instala las dependencias requeridas:
    ```bash
    pip install -r requirements.txt
+3. Lanza la aplicación mediante Streamlit:  
+   ```bash
+   python -m streamlit run app.py
 ## Diccionario de Datos
 Los datos introducidos en la aplicación corresponden a medidas microscópicas de los núcleos de las células mamarias. Para cada característica base, la herramienta evalúa tres dimensiones matemáticas:
 
